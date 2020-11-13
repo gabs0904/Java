@@ -1,0 +1,134 @@
+/*
+Да се напише алгоритам кој ќе врши евалуација на израз во постфикс нотација.
+
+На влез се чита низа од знаци за изразот (стринг), а на излез се печати вредноста на изразот по евалуацијата.
+
+*/
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.NoSuchElementException;
+ interface Stack<E> {
+    public boolean isEmpty ();
+
+    public E peek ();
+    	
+    public void clear ();
+
+    public void push (E x);
+
+    public E pop ();
+}
+ class ArrayStack<E> implements Stack<E>  {
+    private E[] elems;
+    private int depth;
+
+    @SuppressWarnings("unchecked")
+    public ArrayStack (int maxDepth) {
+        elems = (E[]) new Object[maxDepth];
+        depth = 0;
+    }
+
+
+    public boolean isEmpty () {
+        return (depth == 0);
+    }
+
+
+    public E peek () {
+        if (depth == 0)
+            throw new NoSuchElementException();
+        return elems[depth-1];
+    }
+
+
+    public void clear () {
+        for (int i = 0; i < depth; i++)  elems[i] = null;
+        depth = 0;
+    }
+
+
+    public void push (E x) {
+        elems[depth++] = x;
+    }
+
+
+    public E pop () {
+        if (depth == 0)
+           throw new NoSuchElementException();
+        E topmost = elems[--depth];
+        elems[depth] = null;
+        return topmost;
+    }
+}
+
+
+
+public class PostFixEvaluation {
+     public static int Postfix(String exp){
+       ArrayStack<Integer> tmp = new ArrayStack<Integer>(100);
+	    String s="";
+        for (int i = 0; i < exp.length(); i++) {
+	        char  current = exp.charAt(i);
+            if(current == ' '){ 
+            continue; 
+            } if(Character.isDigit(current)){  
+                int n = 0; 
+                  
+                while(Character.isDigit(current)) 
+                { 
+                    n = n*10 + (int)(current-'0'); 
+                    i++; 
+                    current = exp.charAt(i); 
+                } 
+                i--; 
+                tmp.push(n);
+            }else if (current == '+' || current == '-' || current == '*' || current == '/') { 
+                int val1 =Integer.parseInt("" + tmp.pop());
+                int val2 =Integer.parseInt("" + tmp.pop());
+                int val;  
+                switch(current) 
+                { 
+                    case '+': 
+                    val=val2+val1;
+                    tmp.push(val); 
+                    break; 
+                      
+                    case '-': 
+                    val=val2-val1;
+                    tmp.push(val); 
+                    break; 
+                      
+                    case '/': 
+                   val=val2/val1;
+                    tmp.push(val);  
+                    break; 
+                      
+                    case '*': 
+                    val=val2*val1;
+                    tmp.push(val); 
+                    break; 
+              } 
+            } 
+       
+        }     
+       return tmp.pop();
+       }
+         
+    
+
+	public static void main(String[] args) throws Exception{
+          
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        
+        String expression = br.readLine();
+        char exp[] = expression.toCharArray();
+        
+        br.close();
+        int num;
+        num=Postfix(expression);
+        System.out.println(num);
+
+	}
+
+}
